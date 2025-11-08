@@ -76,5 +76,18 @@ else:
         show_labels=True,
         show_legend=True,
     )
+
+    # --- Example 4: Heatmap Mode (Blue) with Labels & Counts ---
+    print("Running Example 4: Heatmap with Labels & Counts...")
+    create_citation_map(
+        CSV_FILENAME,
+        output_filename='figs/map_ex4_heatmap_with_label_count.png',
+        scale='log_rank',
+        fill_mode='heatmap',
+        fill_cmap='Blues',
+        show_labels=True,
+        show_legend=True,
+        show_counts=True,
+    )
     
     print("\nAll map examples generated!")

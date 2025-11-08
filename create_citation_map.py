@@ -30,6 +30,7 @@ def create_citation_map(
     
     # --- Other Options ---
     show_labels: bool = False,
+    show_counts: bool = False,
     show_legend: bool = False, # Show simple categorical legend
     base_color: str = '#EEEEEE',
     border_color: str = '#FFFFFF'
@@ -185,7 +186,7 @@ def create_citation_map(
         )
 
     # 6d. Add labels and pins
-    if show_labels or show_pins:
+    if show_labels or show_pins or show_counts:
         if not cited_geometries.empty:
             # Get colormap for pins if needed
             if pin_scale_color:
@@ -226,18 +227,32 @@ def create_citation_map(
                         zorder=10 # Draw pins above map but below labels
                     )
                 
-                if show_labels:
-                    ax.annotate(
-                        text=row['name'],
-                        xy=(centroid.x, centroid.y),
-                        ha='center', va='bottom',
-                        fontsize=8,
-                        color='black',
-                        path_effects=[
-                            PathEffects.withStroke(linewidth=2, foreground="white")
-                        ],
-                        zorder=11 # Draw labels on top of everything
-                    )
+                # --- labels/counts ---
+                if show_labels or show_counts:
+                    # Determine text to display
+                    label_text = ""
+                    if show_labels:
+                        label_text = row['name']
+                    if show_counts:
+                        # Add a newline if both are shown
+                        if label_text: 
+                            label_text += f"\n{row['count']}"
+                        else:
+                            label_text = str(row['count']) # Use raw count
+
+                    if label_text: # Ensure we have something to plot
+                        ax.annotate(
+                                text=label_text,
+                            xy=(centroid.x, centroid.y),
+                                ha='center', 
+                                va='center', # Center-align multi-line text
+                            fontsize=8,
+                            color='black',
+                            path_effects=[
+                                PathEffects.withStroke(linewidth=2, foreground="white")
+                            ],
+                                zorder=11 # Draw labels on top of pins
+                        )
 
     # 6e. Save plot
     plt.tight_layout()

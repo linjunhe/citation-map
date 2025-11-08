@@ -7,7 +7,7 @@ This repository contains two primary modules:
 1.  **`fetch_citation_info.py`**: A module to fetch all citations for an author (using their [ORCID iD](https://orcid.org/signin)) from the [OpenAlex](https://openalex.org/) API and save them as a CSV file.
 2.  **`create_citation_map.py`**: A module to generate highly customizable world maps from that CSV data.
 
-![exp2](figs/map_ex_simple_green_with_pin.png)
+![citation map](figs/map_ex_simple_green_with_pin.png)
 
 ## Installation
 
@@ -107,7 +107,7 @@ create_citation_map(
 )
 ```
 
-![exp1](figs/map_ex1_simple_blue.png)
+![citation map 1](figs/map_ex1_simple_blue.png)
 
 -----
 
@@ -131,14 +131,14 @@ create_citation_map(
 )
 ```
 
-![exp2](figs/map_ex2_heatmap_with_Reds_cmap_with_pin.png)
+![citation map 2](figs/map_ex2_heatmap_with_Reds_cmap_with_pin.png)
 
 -----
 
 
 **Example 3: Heatmap Mode (Blue) with Labels**
 
-A `log_rank` scaled heatmap using a blue colormap, with country labels and a legend.
+A `log_rank` scaled heatmap using a blue colormap, with country labels.
 
 ```python
 create_citation_map(
@@ -152,7 +152,29 @@ create_citation_map(
 )
 ```
 
-![exp4](figs/map_ex3_heatmap_with_label.png)
+![citation map 3](figs/map_ex3_heatmap_with_label.png)
+
+-----
+
+
+**Example 4: Heatmap Mode (Blue) with Labels & Counts**
+
+A `log_rank` scaled heatmap using a blue colormap, with country labels and counts.
+
+```python
+create_citation_map(
+    "citation_info.csv",
+    output_filename='map_ex4_heatmap_with_label_count.png',
+    scale='log_rank',
+    fill_mode='heatmap',
+    fill_cmap='Blues',
+    show_labels=True,
+    show_legend=True,
+    show_counts=True,
+)
+```
+
+![citation map 4](figs/map_ex4_heatmap_with_label_count.png)
 
 
 
@@ -186,6 +208,7 @@ Here are all the available parameters for `create_citation_map`:
 | | | | |
 | **Other Options** | | | |
 | `show_labels` | `bool` | `False` | If True, add country name labels. |
+| `show_counts` | `bool` | `False` | If True, add citation counts. |
 | `show_legend` | `bool` | `False` | If True, show a simple 'Citing' vs 'Not Citing' legend. |
 | `base_color` | `str` | `'#EEEEEE'` | Color for non-citing countries. |
 | `border_color` | `str` | `'#FFFFFF'` | Color for country borders. |
