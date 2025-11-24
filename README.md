@@ -48,16 +48,6 @@ python citation_fetcher.py --orcid 0000-0002-XXXX-XXXX --email your_email@exampl
 python citation_fetcher.py --scholar_id SCHOLAR_ID --email your_email@example.com
 ```
 
-**[WARNING] Verify Your Data (Crossref Matching)**
-
-When using **ORCID** (for missing DOIs) or especially **Google Scholar** (for all DOIs), the tool uses the **Crossref API** to guess the DOI based on the paper title. While usually accurate, title matching is not 100% perfect.
-
-**Please check the generated intermediate file** (`publications_with_doi_*.csv`):
-
-1.  Open the CSV file.
-2.  Compare the **first column** (`my_publication`) with the **third column** (`Source`).
-3.  If the titles look completely different, the DOI in the second column is likely incorrect.
-4.  You can manually fix the DOI in this CSV and then run the tool again using **Method D**.
 
 #### Method C: Using OpenAlex Author ID (Recommended)
   * **Logic**: Directly fetches your work list from [OpenAlex](https://openalex.org/). This is the fastest method if you already have your [OpenAlex author ID](https://help.openalex.org/hc/en-us/articles/27281068027031-How-do-I-find-my-OpenAlex-author-ID).
