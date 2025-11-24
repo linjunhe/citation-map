@@ -4,7 +4,7 @@ A Python toolkit to fetch and visualize the global distribution of your academic
 
 This repository contains two primary modules:
 
-1.  **`fetch_citation_info.py`**: A module to fetch all citations for an author (using their [ORCID iD](https://orcid.org/signin)) from the [OpenAlex](https://openalex.org/) API and save them as a CSV file.
+1.  **`fetch_citation_info.py`**: A module to fetch all citations for an author (using their [ORCID iD](https://orcid.org/signin) or [OpenAlex ID](https://docs.openalex.org/how-to-use-the-api/get-single-entities#the-openalex-id)) from the [OpenAlex](https://openalex.org/) API and save them as a CSV file. <u>Note: If you recently registered an ORCID, it might not be indexed by OpenAlex yet. In that case, it is recommended to use your OpenAlex ID, which you can quickly find by searching for your name or publication on [OpenAlex](https://openalex.org/)</u>.
 2.  **`create_citation_map.py`**: A module to generate highly customizable world maps from that CSV data.
 
 ![citation map](figs/map_ex_simple_green_with_pin.png)
@@ -30,19 +30,19 @@ The workflow is two steps:
 
 ### Step 1: Fetch Your Citation Data
 
-Import and call the `get_citation_data_by_orcid` function. You must provide your ORCID iD. It is also highly recommended to provide your email address for polite API access.
+Import and call the `get_citation_data` function. You must provide your ORCID iD. It is also highly recommended to provide your email address for polite API access.
 
 ```python
-from fetch_citation_info import get_citation_data_by_orcid
+from fetch_citation_info import get_citation_data
 
 # -- Configuration --
-YOUR_ORCID = "0000-0002-XXXX-XXXX" 
+YOUR_ID = "0000-0002-XXXX-XXXX" or "A5XXXXXXXX"  # ORCID or OpenAlex ID
 YOUR_EMAIL = "your_email@example.com"
 CSV_FILENAME = "citation_info.csv"
 
 # -- Run the fetcher --
-get_citation_data_by_orcid(
-    orcid=YOUR_ORCID, 
+get_citation_data(
+    author_id=YOUR_ID, 
     output_csv=CSV_FILENAME, 
     email=YOUR_EMAIL
 )

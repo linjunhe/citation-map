@@ -37,16 +37,18 @@ def _get_paginated_results(session: requests.Session, url: str) -> List[Dict[str
             
     return all_results
 
-def get_citation_data_by_orcid(orcid: str, output_csv: str, email: Optional[str] = None) -> None:
+def get_citation_data(author_id: str, output_csv: str, email: Optional[str] = None) -> None:
     """
-    Fetches citation data for all publications of an author via their ORCID iD
+    Fetches citation data for all publications of an author via their OpenAlex ID or ORCID
     and exports the data to a CSV file.
 
     Args:
-    orcid (str): The author's ORCID iD (e.g., "0000-0002-4255-2538").
+    author_id (str): The author's identifier. 
+                     - OpenAlex ID (e.g., "A5023888391") 
+                     - OR ORCID (e.g., "0000-0002-4255-2538").
     output_csv (str): The file path for the output CSV (e.g., "citations.csv").
     email (Optional[str]): Your email address. Providing this is polite practice
-                           for the OpenAlex API, allowing them to contact you.
+                           for the OpenAlex API.
     """
     
     # 1. Set up the requests session
@@ -60,19 +62,30 @@ def get_citation_data_by_orcid(orcid: str, output_csv: str, email: Optional[str]
     all_rows = []
 
     try:
-        # --- Step 1: Get the author's OpenAlex ID and works_api_url from ORCID ---
-        # Note: OpenAlex API can handle the full ORCID URL or just the ID
-        orcid_url = f"https://orcid.org/{orcid}"
-        author_url = f"{OPENALEX_API_URL}/authors/{orcid_url}"
+        # --- Step 1: Determine ID type and get author details ---
+        author_id = author_id.strip()
+        
+        # Logic to distinguish between OpenAlex ID (starts with 'A') and ORCID
+        if author_id.upper().startswith('A'):
+            print(f"Detected OpenAlex ID: {author_id}")
+            author_url = f"{OPENALEX_API_URL}/authors/{author_id}"
+        else:
+            print(f"Detected ORCID: {author_id}")
+            author_url = f"https://orcid.org/{author_id}"
+
         
         print(f"Fetching author details: {author_url}")
         response = session.get(author_url)
         response.raise_for_status()
         author_data = response.json()
         
+        # Get the author's display name for confirmation (optional but nice)
+        author_name_display = author_data.get('display_name', 'Unknown')
+        print(f"Processing author: {author_name_display}")
+        
         works_api_url = author_data.get('works_api_url')
         if not works_api_url:
-            print(f"Error: Could not find 'works_api_url' for ORCID: {orcid}")
+            print(f"Error: Could not find 'works_api_url' for author ID: {author_id}")
             return
 
         print(f"Author found. Fetching works from: {works_api_url}")
@@ -84,21 +97,32 @@ def get_citation_data_by_orcid(orcid: str, output_csv: str, email: Optional[str]
         # --- Step 3: Iterate through each publication to get its citations ---
         for i, my_pub in enumerate(my_publications):
             my_pub_title = my_pub.get('title', 'N/A')
-            cited_by_api_url = my_pub.get('cited_by_api_url')
             cited_by_count = my_pub.get('cited_by_count', 0)
             
             print(f"\n--- Processing my publication {i+1}/{len(my_publications)} ---")
             print(f"Title: {my_pub_title}")
             print(f"Citations: {cited_by_count}")
 
-            if not cited_by_api_url or cited_by_count == 0:
-                print("No citations or 'cited_by_api_url' unavailable. Skipping.")
+            if cited_by_count == 0:
+                print("No citations. Skipping.")
+                continue
+
+            target_url = None
+
+            
+            # Construct URL using the work ID and filter
+            my_pub_full_id = my_pub.get('id')
+            if not my_pub_full_id:
+                print("Warning: Publication ID missing. Skipping.")
                 continue
                 
-            print(f"Fetching citing works from: {cited_by_api_url}")
+            work_id = my_pub_full_id.split('/')[-1]
+            target_url = f"{OPENALEX_API_URL}/works?filter=cites:{work_id}"
+
+            print(f"Fetching citing works via: {target_url}")
             
             # Get all papers that cite this publication
-            citing_papers = _get_paginated_results(session, cited_by_api_url)
+            citing_papers = _get_paginated_results(session, target_url)
 
             # --- Step 4: Extract details from each citing paper ---
             for citing_paper in citing_papers:

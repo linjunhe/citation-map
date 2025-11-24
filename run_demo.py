@@ -1,17 +1,17 @@
 import os
-from fetch_citation_info import get_citation_data_by_orcid
+from fetch_citation_info import get_citation_data
 from create_citation_map import create_citation_map
 
 # --- 1. Configuration ---
 # !!! REPLACE WITH YOUR OWN INFORMATION !!!
-YOUR_ORCID = "0000-0002-XXXX-XXXX"
+YOUR_ID = "0000-0002-XXXX-XXXX" or "A5XXXXXXXX"  # ORCID or OpenAlex ID
 YOUR_EMAIL = "your_email@example.com"
 CSV_FILENAME = "citation_info.csv"
 
 # --- 2. Fetch Data (Optional) ---
 # Uncomment the lines below if the CSV file doesn't exist or you want to refresh it.
-# get_citation_data_by_orcid(
-#     orcid=YOUR_ORCID, 
+# get_citation_data(
+#     author_id=YOUR_ID, 
 #     output_csv=CSV_FILENAME, 
 #     email=YOUR_EMAIL
 # )
